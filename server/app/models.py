@@ -10,11 +10,13 @@ class Doctor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
+    
 
     # relationships
     clients = db.relationship('Client', back_populates='created_by')
     programs = db.relationship('HealthProgram', back_populates='created_by')
+    api_keys  = db.relationship('APIKey', back_populates='doctor',
+                                 cascade='all, delete-orphan')
 
 
 class Client(db.Model):
