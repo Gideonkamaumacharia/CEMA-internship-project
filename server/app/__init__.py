@@ -37,7 +37,7 @@ def create_app(config_class='app.config.Config'):
 
     # Register the routes with the SQLAlchemy instance
     # Register blueprints from the /routes package
-    from .routes import auth_bp, clients_bp, programs_bp, enroll_bp
+    from .routes import clients_bp, programs_bp, enroll_bp
     app.register_blueprint(clients_bp, url_prefix='/api/clients')
     app.register_blueprint(programs_bp, url_prefix='/api/programs')
     app.register_blueprint(enroll_bp, url_prefix='/api/enrollments')
