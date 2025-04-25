@@ -48,7 +48,7 @@ def register_client():
 @api_key_required
 def list_clients():
     clients = Client.query.all()
-    return jsonify([{ "id": c.id, "first_name": c.first_name, "last_name": c.last_name } for c in clients]), 200
+    return jsonify([{ "id": client.id, "first_name": client.first_name, "last_name": client.last_name } for client in clients]), 200
 
 
 @clients_bp.route('/search', methods=['GET'])
