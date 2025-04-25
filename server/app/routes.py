@@ -63,4 +63,4 @@ def register_doctor():
     return jsonify({
         "msg": "Doctor registered",
         "doctor": {"id": doctor.id, "name": doctor.name, "email": doctor.email}
-    }), 201
+    }), 200
