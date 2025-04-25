@@ -31,12 +31,13 @@ class Client(db.Model):
     created_by = db.relationship('Doctor', back_populates='clients')
 
     # association to Enrollment
-    enrollments = db.relationship('Enrollment', back_populates='client', cascade='all, delete-orphan')
+    enrollments = db.relationship('Enrollment', back_populates='client', cascade='all, delete-orphan', overlaps='programs,clients')
     # convenience: directly list programs
     programs = db.relationship(
         'HealthProgram',
         secondary='enrollments',
-        back_populates='clients'
+        back_populates='clients',
+        overlaps='enrollments'
     )
 
 
@@ -50,11 +51,12 @@ class HealthProgram(db.Model):
     created_by_id = db.Column(db.Integer, db.ForeignKey('doctors.id'), nullable=False)
     created_by = db.relationship('Doctor', back_populates='programs')
 
-    enrollments = db.relationship('Enrollment', back_populates='program', cascade='all, delete-orphan')
+    enrollments = db.relationship('Enrollment', back_populates='program', cascade='all, delete-orphan',overlaps='clients,programs')
     clients = db.relationship(
         'Client',
         secondary='enrollments',
-        back_populates='programs'
+        back_populates='programs',
+        overlaps='enrollments'
     )
 
 
@@ -66,5 +68,5 @@ class Enrollment(db.Model):
     enrolled_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     status = db.Column(db.String(50), default='active')  # e.g. active, completed, dropped
 
-    client = db.relationship('Client', back_populates='enrollments')
-    program = db.relationship('HealthProgram', back_populates='enrollments')
+    client = db.relationship('Client', back_populates='enrollments',overlaps='programs,clients')
+    program = db.relationship('HealthProgram', back_populates='enrollments',overlaps='clients,programs')
