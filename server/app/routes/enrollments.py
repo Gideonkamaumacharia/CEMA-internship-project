@@ -1,5 +1,4 @@
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required
 from app import db
 from app.models import Client, HealthProgram, Enrollment
 from app.utils.auth import api_key_required
@@ -10,28 +9,28 @@ enroll_bp = Blueprint('enrollments', __name__)
 @api_key_required
 def enroll_client(client_id):
     data = request.get_json() or {}
-    ids = data.get('program_ids', [])
-    if not ids or not isinstance(ids, list):
+    program_ids = data.get('program_ids', [])
+    if not program_ids or not isinstance(program_ids, list):
         return jsonify({"msg": "program_ids must be a list of IDs"}), 400
 
     client = Client.query.get_or_404(client_id)
     enrollments = []
 
-    for pid in ids:
-        prog = HealthProgram.query.get(pid)
-        if not prog:
+    for program_id in program_ids:
+        program = HealthProgram.query.get(program_id)
+        if not program:
             continue
-        existing = Enrollment.query.filter_by(client_id=client.id, program_id=pid).first()
+        existing = Enrollment.query.filter_by(client_id=client.id, program_id=program_id).first()
         if existing:
             continue
-        e = Enrollment(client=client, program=prog)
-        db.session.add(e)
-        enrollments.append(e)
+        enrollment = Enrollment(client=client, program=program)
+        db.session.add(enrollment)
+        enrollments.append(enrollment)
 
     db.session.commit()
     return jsonify([{
-        "client_id": e.client_id,
-        "program_id": e.program_id,
-        "enrolled_at": e.enrolled_at.isoformat(),
-        "status": e.status
-    } for e in enrollments]), 201
+        "client_id": enrollment.client_id,
+        "program_id": enrollment.program_id,
+        "enrolled_at": enrollment.enrolled_at.isoformat(),
+        "status": enrollment.status
+    } for enrollment in enrollments]), 201
