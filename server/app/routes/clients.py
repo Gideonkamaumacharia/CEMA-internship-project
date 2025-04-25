@@ -61,7 +61,7 @@ def search_clients():
     like = f"%{q}%"
     matches = Client.query.filter(or_(Client.first_name.ilike(like), Client.last_name.ilike(like))).all()
 
-    return jsonify([{ "id": c.id, "first_name": c.first_name, "last_name": c.last_name } for c in matches]), 200
+    return jsonify([{ "id": client.id, "first_name": client.first_name, "last_name": client.last_name } for client in matches]), 200
 
 
 @clients_bp.route('/<int:client_id>', methods=['GET'])
