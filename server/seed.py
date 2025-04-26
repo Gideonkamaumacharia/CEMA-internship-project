@@ -6,7 +6,7 @@ app = create_app()
 with app.app_context():
     doctor = Doctor.query.filter_by(email='admin@cema.com').first()
     if not doctor:
-        doctor = Doctor(name='Dr. Admin', email='admin@cema.com')
+        doctor = Doctor(name='Dr. Admin', email='gideon.macharia@student.moringaschool.com',is_admin=True)
         db.session.add(doctor)
         db.session.commit()
         print("Doctor seeded.")
