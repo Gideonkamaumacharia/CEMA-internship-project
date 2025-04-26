@@ -7,8 +7,13 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/validate', methods=['GET'])
 @api_key_required
 def validate_api_key():
-    # If we got here, the decorator has already ensured the key is valid
+    doctor = request.doctor
+    
     return jsonify({
-        "msg":    "API key is valid",
-        "doctor": request.doctor.name
-    }), 200
+            "doctor": {
+                "id": doctor.id,
+                "name": doctor.name,
+                "email": doctor.email,
+                "is_admin": doctor.is_admin
+            }
+        }), 200
