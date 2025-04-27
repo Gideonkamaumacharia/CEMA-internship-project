@@ -48,4 +48,4 @@ def create_and_provision_doctor():
     mail.send(msg)
 
     # 4) Return doctor ID
-    return jsonify({"doctor_id": doctor.id, "msg": "Doctor created & API key emailed"}), 201
+    return jsonify({ "msg": "Doctor created & API key emailed"}), 200
