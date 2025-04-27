@@ -28,10 +28,7 @@ def enroll_client(client_id):
         enrollments.append(enrollment)
 
     db.session.commit()
-    return jsonify([{
-        "client_id": enrollment.client_id,
-        "program_id": enrollment.program_id,
-        "program_name": enrollment.program.name,
-        "enrolled_at": enrollment.enrolled_at.isoformat(),
-        "status": enrollment.status
-    } for enrollment in enrollments]), 201
+    return jsonify({
+        "message": "Client enrolled successfully"
+        
+    }), 200
