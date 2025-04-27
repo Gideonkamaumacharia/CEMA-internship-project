@@ -1,185 +1,129 @@
-# Health Info System
+# Health Information Management System - Backend
+This is the Flask-based backend for the CEMA Internship Project Health Information Management System. It provides a RESTful API for managing doctors, clients, health programs, enrollments, and authentication via API keys.
 
-A full-stack Single Page Application (SPA) for managing clients and health programs/services. Doctors authenticate via API keys and can perform the following:
+## Tech Stack
+    Language & Framework: Python, Flask
 
-- **Create and manage health programs** (TB, Malaria, HIV, etc.)
-- **Register new clients**
-- **Enroll clients** in one or more programs
-- **Search** for clients by name
-- **View client profiles**, including their program enrollments
-- **Admin Panel** for super-admins to onboard new doctors and email API keys
+    ORM: SQLAlchemy
 
----
+    Database Migrations: Alembic (Flask-Migrate)
 
-## 📁 Directory Structure
+    Database: PostgreSQL
 
-```
-/server                           # Flask backend
-├── app
-│   ├── __init__.py               # App factory
-│   ├── config.py                 # Configuration classes
-│   ├── models.py                 # SQLAlchemy models
-│   ├── routes
-│   │   ├── auth.py               # /api/auth routes
-│   │   ├── clients.py            # /api/clients routes
-│   │   ├── programs.py           # /api/programs routes
-│   │   └── enrollments.py        # /api/enrollments routes
-│   └── utils
-│       └── auth.py               # Decorators: api_key_required, super_admin_required
-├── migrations/                   # Alembic migrations
-├── seed.py                       # Bootstrap initial super-admin + API key
-├── run.py                        # Entrypoint
-└── Pipfile                       # Dependencies
+## Authentication & Security:
 
-/frontend                         # React (Vite) Frontend
-├── src
-│   ├── App.jsx                   # Main router & layout
-│   ├── main.jsx                  # ReactDOM render
-│   ├── components
-│   │   ├── LandingPage.jsx       # Welcome page
-│   │   ├── ApiKeyPrompt.jsx      # API key entry & validation
-│   │   ├── RegisterClient.jsx    # Client registration form
-│   │   ├── SearchClients.jsx     # Search form & results
-│   │   ├── ViewClientProfile.jsx # Profile lookup & display
-│   │   ├── CreateProgram.jsx     # Program creation form
-│   │   ├── EnrollClient.jsx      # Enrollment form with program list
-│   │   └── AdminPanel.jsx        # Super-admin doctor provisioning
-├── vite.config.js                # Dev server proxy
-└── package.json                  # Dependencies & scripts
-```
+    APIKey model + api_key_required and super_admin_required decorators
 
----
+    CORS: Flask-CORS
 
-## 🚀 Features
+## Environment Management: Pipenv, python-dotenv
 
-- **API First**: All functionality exposed via RESTful endpoints secured by API keys.
-- **API Key Authentication**: `api_key_required` decorator enforces valid key in `X-API-KEY` header.
-- **Super-Admin Role**: `super_admin_required` decorator for provisioning new doctors.
-- **Frontend**:
-  - React + Vite for fast HMR
-  - Tailwind CSS for styling
-  - React Router for SPA navigation
+## Project Structure
+    server/
+    ├─ Pipfile, Pipfile.lock         # Python environment definitions
+    ├─ .env                          # (ignored) actual environment vars
+    ├─ .env.example                  # template for env vars
+    ├─ run.py                        # application entrypoint
+    ├─ seed.py                       # script to seed initial admin Doctor & APIKey
+    ├─ app/                          # application package
+    │   ├─ __init__.py               # factory, config loading, extension init, blueprint registration
+    │   ├─ config.py                 # Config classes: DevelopmentConfig, TestingConfig, ProductionConfig
+    │   ├─ models.py                 # SQLAlchemy models: Doctor, Client, HealthProgram, Enrollment, APIKey
+    │   ├─ utils/                    # helper decorators (API key and admin checks)
+    │   │   └─ auth.py
+    │   └─ routes/                   # modular blueprints for each resource
+    │       ├─ __init__.py           # imports and registers blueprints
+    │       ├─ auth.py               # `/validate` endpoint for API key checking
+    │       ├─ admin.py              # admin-only endpoints
+    │       ├─ clients.py            # client CRUD endpoints
+    │       ├─ programs.py           # health program CRUD endpoints
+    │       └─ enrollments.py        # enrollment endpoints
+    └─ migrations/                   # Alembic migration scripts
+        ├─ versions/                 # revision files for schema changes
 
----
+# Setup & Run
+1. Clone & Install
+bash
+git clone <backend-repo-url>
+cd server
+pipenv install
+pipenv shell
 
-## ⚙️ Backend Setup
+2. Database Preparation
+-Create Postgres role & database (once):
+-sudo -u postgres psql
+-CREATE USER gideon WITH PASSWORD '<PASSWORD>';
+-CREATE DATABASE health_db OWNER gideon;
+-ALTER ROLE gideon CREATEDB;
+\q
+## Configure environment:
 
-1. **Clone and install**:
-    ```bash
-    git clone <repo-url>
-    cd server
-    pipenv install --dev
-    pipenv shell
-    ```
+cp .env.example .env
+## edit .env with actual password and any other secrets
 
-2. **Environment Variables**: Create a `.env` in `/server`:
-    ```ini
-    DATABASE_URL=postgresql://user:pass@localhost/health_db
-    MAIL_USERNAME=<your gmail>
-    MAIL_PASSWORD=<app-password>
-    ```
+3. Migrations
+export FLASK_APP=run.py
+flask db init         # if initializing first time
+flask db migrate -m "initial schema"
+flask db upgrade
+## subsequent changes:
+flask db migrate -m "describe change"
+flask db upgrade
+4. Seeding
 
-3. **Database Migrations**:
-    ```bash
-    flask db init         # only first time
-    flask db migrate -m "Initial"
-    flask db upgrade
-    ```
+python seed.py
+Seeds an admin Doctor with email admin@cema.com and a generated API key.
 
-4. **Seed Super-Admin**:
-    ```bash
-    python seed.py
-    # Outputs: doctor & API key in console.
-    ```
+5. Run the Server
 
-5. **Run Server**:
-    ```bash
-    flask run
-    ```
-    - API served at `http://localhost:5000/api/...`
+python run.py
+Default: http://localhost:5000
 
----
+# API Endpoints
 
-## 🔑 API Endpoints
+##     Blueprint	  Endpoint	    Method	   Description	                             Auth
+##     auth_bp	:     
+                     /validate	     GET	    Validate API Key, return doctor info	 API Key
 
-### Auth
-- `GET /api/auth/validate` &nbsp;&nbsp;Validate API key → returns `{ doctor: { id, name, email, is_admin } }`
+##    clients_bp:	 
+                    /clients	   GET	      List all clients	                         API Key
+                    /clients	   POST	      Register a new client	                     API Key
 
-### Clients
-- `POST /api/clients/register` &nbsp;Register a client
-- `GET /api/clients/` &nbsp;List all clients
-- `GET /api/clients/search?q=` &nbsp;Search clients by name
-- `GET /api/clients/:id` &nbsp;Get client profile and enrollments
+##     programs_bp:	
+                    /programs	   GET	      List all health programs	                 API Key
+                    /programs	   POST	      Create a health program	                 API Key
 
-### Programs
-- `POST /api/programs/` &nbsp;Create program
-- `GET /api/programs/` &nbsp;List programs
-- `GET /api/programs/list` &nbsp;(for dropdown) returns `{ id, name, description, created_at }`
+##     enroll_bp:	
+                    /enrollments	GET	       List all enrollments	                    API Key
+                    /enrollments	POST	    Enroll client in a program	            API Key
 
-### Enrollments
-- `POST /api/enrollments/:client_id` &nbsp;Enroll in programs via `{ program_ids: [1,2] }`
+##     admin_bp	:
+                    /admin/...	   VARIES	 Admin-only operations (e.g., user management)	Super Admin
 
-### Admin (super-admin only)
-- `POST /api/admin/doctors` &nbsp;Create doctor & email API key
-- `POST /api/admin/doctors/:id/key` &nbsp;Rotate doctor’s API key
+# Authentication
+    API Key: Each Doctor has one or more APIKey records. Include API-Key header in requests.
 
-_All endpoints require `X-API-KEY` header except the seed script._
+##     Decorators:
 
----
+    - @api_key_required: Validates the API key, injects request.doctor.
 
-## 🌐 Frontend Setup
+    - @super_admin_required: Ensures doctor.is_admin == True.
 
-1. **Navigate & install**:
-    ```bash
-    cd frontend
-    npm install
-    ```
+# Migrations & Commit History
+    Initial schema → doctors, clients, health_programs, enrollments tables
 
-2. **Configure proxy** in `vite.config.js`:
-    ```js
-    server: {
-      proxy: {
-        '/api': 'http://localhost:5000'
-      }
-    }
-    ```
+    Password column dropped → refactor: remove password column from Doctor model
 
-3. **Run dev server**:
-    ```bash
-    npm run dev
-    ```
-    - App at `http://localhost:5173`
+    APIKey model added → feat: introduce APIKey model and api_keys table
 
-4. **Workflow**:
-    - **Landing Page** → **Get Started**
-    - **Paste API Key** → **Verify**
-    - **Portal** with navigation cards:
-        - Register Client
-        - Search Clients
-        - View Client Profile
-        - Create Program
-        - Enroll Client (checkbox dropdown)
-        - Admin Panel (if `is_admin`)
+    is_admin added → feat: add is_admin field to Doctor model
 
----
+# Contributing
+    Fork & create a feature branch
 
-## 📚 Technologies
+    Write tests and implement changes
 
-- **Backend**: Python, Flask, SQLAlchemy, Flask-Migrate, Flask-Mail, PostgreSQL
-- **Frontend**: React, Vite, React Router, Tailwind CSS
+    Commit with feat:, fix:, or chore: prefixes
 
----
-
-## ✅ Contributing
-
-PRs welcome! Please follow these guidelines:
-- Write clean, well-documented code.
-- Add tests for new features.
-- Update migrations and seed scripts as needed.
-
----
-
-## 📄 License
-
-MIT © Your Name
+    Open a PR against main
 
