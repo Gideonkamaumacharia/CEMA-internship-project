@@ -33,11 +33,8 @@ def create_program():
         return jsonify({"msg": "Program name already exists"}), 409
 
     return jsonify({
-        "id": program.id,
-        "name": program.name,
-        "description": program.description,
-        "created_at": program.created_at.isoformat()
-    }), 201
+       "message": "Program created successfully"
+    }), 200
 
 
 @programs_bp.route('/list', methods=['GET'])
