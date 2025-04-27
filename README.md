@@ -2,13 +2,17 @@
 This is the Flask-based backend for the CEMA Internship Project Health Information Management System. It provides a RESTful API for managing doctors, clients, health programs, enrollments, and authentication via API keys.
 
 ## Tech Stack
-    Language & Framework: Python, Flask
+###    Language & Framework:
+ Python, Flask
 
-    ORM: SQLAlchemy
+###    ORM: 
+SQLAlchemy
 
-    Database Migrations: Alembic (Flask-Migrate)
+###    Database Migrations: 
+Alembic (Flask-Migrate)
 
-    Database: PostgreSQL
+###    Database: 
+PostgreSQL
 
 ## Authentication & Security:
 
@@ -16,7 +20,8 @@ This is the Flask-based backend for the CEMA Internship Project Health Informati
 
     CORS: Flask-CORS
 
-## Environment Management: Pipenv, python-dotenv
+## Environment Management: 
+Pipenv, python-dotenv
 
 ## Project Structure
     server/
@@ -42,66 +47,68 @@ This is the Flask-based backend for the CEMA Internship Project Health Informati
         ├─ versions/                 # revision files for schema changes
 
 # Setup & Run
-1. Clone & Install
-bash
+## 1. Clone & Install
 git clone <backend-repo-url>
 cd server
 pipenv install
 pipenv shell
 
-2. Database Preparation
+
+## 2.Configure .env
+DATABASE_URL=postgresql://USER:PASS@localhost/health_db
+MAIL_USERNAME=youremail@example.com
+MAIL_PASSWORD=yourgmailappassword
+
+## 3.Database Preparation
 -Create Postgres role & database (once):
 -sudo -u postgres psql
--CREATE USER gideon WITH PASSWORD '<PASSWORD>';
--CREATE DATABASE health_db OWNER gideon;
--ALTER ROLE gideon CREATEDB;
+-CREATE USER <yourusername> WITH PASSWORD '<PASSWORD>';
+-CREATE DATABASE health_db OWNER <yourusername>;
+-ALTER ROLE <yourusername> CREATEDB;
 \q
-## Configure environment:
+## 4.Configure environment:
 
 cp .env.example .env
-## edit .env with actual password and any other secrets
+### edit .env with actual password and any other secrets
 
-3. Migrations
+## 5.Seed super-admin
+python seed.py       # creates Dr. Admin + API key
+## 6. Migrations
 export FLASK_APP=run.py
 flask db init         # if initializing first time
 flask db migrate -m "initial schema"
 flask db upgrade
-## subsequent changes:
+### subsequent changes:
 flask db migrate -m "describe change"
 flask db upgrade
-4. Seeding
 
-python seed.py
-Seeds an admin Doctor with email admin@cema.com and a generated API key.
+## 7.Run the Server
 
-5. Run the Server
-
-python run.py
+python3 run.py
 Default: http://localhost:5000
 
 # API Endpoints
 
-##     Blueprint	  Endpoint	    Method	   Description	                             Auth
-##     auth_bp	:     
-                     /validate	     GET	    Validate API Key, return doctor info	 API Key
+| Blueprint    | Endpoint                                   | Method | Description                                    | Auth        |
+|--------------|--------------------------------------------|--------|------------------------------------------------|-------------|
+| `auth_bp`    | `/api/auth/validate`                       | GET    | Returns doctor info: { id, name, is_admin }    | API Key    |
+| `clients_bp` | `/api/clients/register`                    | POST   | Register a new client                          | API Key    |
+|              | `/api/clients/`                            | GET    | List all clients                               | API Key    |
+|              | `/api/clients/search?q=`                   | GET    | Search clients                                 | API Key    |
+|              | `/api/clients/<id>`                        | GET    | Fetch client profile + enrollments             | API Key    |
+| `programs_bp`| `/api/programs/`                           | POST   | Create a health program                        | API Key    |
+|              | `/api/programs/`                           | GET    | List all health programs                       | API Key    |
+|              | `/api/programs/list`                       | GET    | List programs for dropdown                     | API Key    |
+| `enroll_bp`  | `/api/enrollments/<client_id>`             | POST   | Enroll client in programs via { program_ids: [] } | API Key  |
+| `admin_bp`   | `/api/admin/doctors`                       | POST   | Create a new doctor + email key                | Super Admin|
+|              | `/api/admin/doctor`                        | POST   | Update an existing doctor                      | Super Admin|
 
-##    clients_bp:	 
-                    /clients	   GET	      List all clients	                         API Key
-                    /clients	   POST	      Register a new client	                     API Key
-
-##     programs_bp:	
-                    /programs	   GET	      List all health programs	                 API Key
-                    /programs	   POST	      Create a health program	                 API Key
-
-##     enroll_bp:	
-                    /enrollments	GET	       List all enrollments	                    API Key
-                    /enrollments	POST	    Enroll client in a program	            API Key
-
-##     admin_bp	:
-                    /admin/...	   VARIES	 Admin-only operations (e.g., user management)	Super Admin
+---
 
 # Authentication
-    API Key: Each Doctor has one or more APIKey records. Include API-Key header in requests.
+
+-API Key**: Each Doctor has one or more APIKey records. Include `API-KEY` header in requests.
+
 
 ##     Decorators:
 
