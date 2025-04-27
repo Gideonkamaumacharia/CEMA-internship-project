@@ -36,10 +36,7 @@ def register_client():
     db.session.add(client)
     db.session.commit()
     return jsonify({
-        "id": client.id,
-        "first_name": client.first_name,
-        "last_name": client.last_name,
-        "registered_at": client.registered_at.isoformat()
+        "message" : "Client registered successfully"
     }), 200
 
 
