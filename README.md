@@ -110,27 +110,27 @@ Default: http://localhost:5000
 -API Key**: Each Doctor has one or more APIKey records. Include `API-KEY` header in requests.
 
 
-##     Decorators:
+#  Decorators:
 
-    - @api_key_required: Validates the API key, injects request.doctor.
+#####    @api_key_required: Validates the API key, injects request.doctor.
 
-    - @super_admin_required: Ensures doctor.is_admin == True.
+#####    @super_admin_required: Ensures doctor.is_admin == True.
 
 # Migrations & Commit History
-    Initial schema → doctors, clients, health_programs, enrollments tables
+#####    Initial schema → doctors, clients, health_programs, enrollments tables
 
-    Password column dropped → refactor: remove password column from Doctor model
+#####    Password column dropped → refactor: remove password column from Doctor model
 
-    APIKey model added → feat: introduce APIKey model and api_keys table
+#####    APIKey model added → feat: introduce APIKey model and api_keys table
 
-    is_admin added → feat: add is_admin field to Doctor model
+#####    is_admin added → feat: add is_admin field to Doctor model
 
 # Contributing
-    Fork & create a feature branch
+#####    Fork & create a feature branch
 
-    Write tests and implement changes
+#####    Write tests and implement changes
 
-    Commit with feat:, fix:, or chore: prefixes
+#####    Commit with feat:, fix:, or chore: prefixes
 
-    Open a PR against main
+#####    Open a PR against main
 
