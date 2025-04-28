@@ -23,6 +23,7 @@ def validate_api_key():
     Returns:
         JSON: Doctor information if the API key is valid.
     """
+    print("Received Headers:", dict(request.headers))
     doctor = request.doctor
 
     return jsonify({
