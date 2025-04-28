@@ -1,6 +1,10 @@
 # Health Information Management System - Backend
 This is the Flask-based backend for the CEMA Internship Project Health Information Management System. It provides a RESTful API for managing doctors, clients, health programs, enrollments, and authentication via API keys.
 
+## Deployed Application
+
+You can access the deployed Health Information Management System frontend [here](https://cemahealthportal.netlify.app/).
+
 ## Tech Stack
 ###    Language & Framework:
  Python, Flask
