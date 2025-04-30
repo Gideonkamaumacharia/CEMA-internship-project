@@ -5,6 +5,10 @@ This is the Flask-based backend for the CEMA Internship Project Health Informati
 
 You can access the deployed Health Information Management System frontend [here](https://cemahealthportal.netlify.app/).
 
+## Live Demo
+
+You can also access the Health Information Management System Live  Demo [here](https://www.loom.com/share/c293edba504f474db3723dd61c8a0adb).
+
 ## Tech Stack
 ###    Language & Framework:
  Python, Flask
